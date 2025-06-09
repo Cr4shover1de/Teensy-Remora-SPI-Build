@@ -1,9 +1,23 @@
 {
   "TEENSY41": {
-    "inherits": ["MCU_NXP"],
+    "inherits": ["MCU_NXP", "Freescale", "Target"],
+    "core": "Cortex-M7FD",
     "supported_toolchains": ["GCC_ARM"],
-    "core": "Cortex-M7F",
-    "extra_labels_add": ["NXP","IMXRT1062"],
-    "macros_add": ["IMXRT1062"]
+    "extra_labels": ["MCU_LPC", "NXP", "MCU_LPC546XX"],
+    "default_toolchain": "GCC_ARM",
+    "macros": [
+      "MBED_RTOS_SINGLE_THREAD",
+      "CPU_LPC546XX",
+      "F_CPU=600000000"
+    ],
+    "device_has": [
+      "ANALOGIN",
+      "SERIAL",
+      "SPI",
+      "I2C",
+      "PWM"
+    ],
+    "detect_code": ["TE41"],
+    "release_versions": ["5"]
   }
 }
