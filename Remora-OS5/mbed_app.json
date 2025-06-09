@@ -1,0 +1,8 @@
+{
+  "target_overrides": {
+    "*": {
+      "target.device_has_add": ["I2C","UART"],
+      "platform.stdio-baud-rate": 115200
+    }
+  }
+}
