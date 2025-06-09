@@ -1,47 +1,52 @@
 name: Build Teensy Remora Firmware
 
-on: [workflow_dispatch]
+on:
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    - name: Install GCC ARM toolchain
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-arm-none-eabi
+      - name: Install GCC ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
 
-    - name: Install mbed-cli
-      run: pip install mbed-cli
+      - name: Install mbed-cli
+        run: |
+          pip install mbed-cli
 
-    - name: Set Mbed Target
-      run: mbed target TEENSY41
+      - name: Set Mbed Target
+        run: |
+          mbed target TEENSY41
 
-    - name: Set Mbed Toolchain
-      run: mbed toolchain GCC_ARM
+      - name: Set Mbed Toolchain
+        run: |
+          mbed toolchain GCC_ARM
 
-    - name: Clone working mbed-os
-      run: |
-        git clone https://github.com/ARMmbed/mbed-os.git mbed-os
+      - name: Clone working mbed-os
+        run: |
+          git clone --depth 1 --branch master https://github.com/ARMmbed/mbed-os.git
 
-    - name: Install required Python packages
-      run: |
-        pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex elftools
+      - name: Install required Python packages
+        run: |
+          pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex
 
-    - name: Compile firmware
-      run: mbed compile --profile release
+      - name: Compile firmware
+        run: |
+          mbed compile --profile release
 
-    - name: Upload HEX
-      uses: actions/upload-artifact@v4
-      with:
-        name: Remora-Firmware
-        path: BUILD/TEENSY41/GCC_ARM-RELEASE/Remora.hex
+      - name: Upload HEX
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoraTeensy41Firmware
+          path: BUILD/TEENSY41/GCC_ARM/*.hex
