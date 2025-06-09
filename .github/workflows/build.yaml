@@ -8,47 +8,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
 
-      - name: Install GCC ARM toolchain
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi
+    - name: Install GCC ARM toolchain
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-arm-none-eabi
 
-      - name: Install mbed-cli
-        run: pip install mbed-cli
+    - name: Install mbed-cli
+      run: pip install mbed-cli
 
-      - name: Set Mbed Target
-        run: mbed target TEENSY41
+    - name: Set Mbed Target
+      run: mbed target TEENSY41
 
-      - name: Set Mbed Toolchain
-        run: mbed toolchain GCC_ARM
+    - name: Set Mbed Toolchain
+      run: mbed toolchain GCC_ARM
 
-      - name: Clone working mbed-os
-        run: git clone --depth 1 --branch master https://github.com/ARMmbed/mbed-os.git
+    - name: Clone working mbed-os
+      run: |
+        git clone --depth=1 https://github.com/ARMmbed/mbed-os.git mbed-os
+        cp -r mbed-os mbed
 
-      - name: Install required Python packages
-        run: |
-          pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex
+    - name: Install required Python packages
+      run: |
+        pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex
 
-      - name: Patch elftools reference
-        run: |
-          mkdir -p mbed-os/tools/elftools/common
-          touch mbed-os/tools/elftools/__init__.py
-          touch mbed-os/tools/elftools/common/__init__.py
-          echo "# shim for pyelftools" > mbed-os/tools/elftools/common/py3compat.py
+    - name: Patch elftools reference
+      run: |
+        mkdir -p mbed-os/tools/elftools/common
+        echo "def bytes2str(b): return b.decode('latin1')" > mbed-os/tools/elftools/common/py3compat.py
 
-      - name: Compile firmware
-        run: mbed compile --profile release
+    - name: Compile firmware
+      run: |
+        mbed compile --profile release
 
-      - name: Upload HEX
-        uses: actions/upload-artifact@v4
-        with:
-          name: RemoraTeensy41Firmware
-          path: BUILD/TEENSY41/GCC_ARM/*.hex
+    - name: Upload HEX
+      uses: actions/upload-artifact@v3
+      with:
+        name: teensy41-hex
+        path: ./BUILD/TEENSY41/GCC_ARM_RELEASE/*.hex
