@@ -18,6 +18,7 @@
       "PWM"
     ],
     "detect_code": ["TE41"],
-    "release_versions": ["5"]
+    "release_versions": ["5"],
+    "linker_script": "teensy41.ld"
   }
 }
