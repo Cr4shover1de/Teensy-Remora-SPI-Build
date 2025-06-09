@@ -22,28 +22,30 @@ jobs:
           sudo apt-get install -y gcc-arm-none-eabi
 
       - name: Install mbed-cli
-        run: |
-          pip install mbed-cli
+        run: pip install mbed-cli
 
       - name: Set Mbed Target
-        run: |
-          mbed target TEENSY41
+        run: mbed target TEENSY41
 
       - name: Set Mbed Toolchain
-        run: |
-          mbed toolchain GCC_ARM
+        run: mbed toolchain GCC_ARM
 
       - name: Clone working mbed-os
-        run: |
-          git clone --depth 1 --branch master https://github.com/ARMmbed/mbed-os.git
+        run: git clone --depth 1 --branch master https://github.com/ARMmbed/mbed-os.git
 
       - name: Install required Python packages
         run: |
           pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex
 
-      - name: Compile firmware
+      - name: Patch elftools reference
         run: |
-          mbed compile --profile release
+          mkdir -p mbed-os/tools/elftools/common
+          touch mbed-os/tools/elftools/__init__.py
+          touch mbed-os/tools/elftools/common/__init__.py
+          echo "# shim for pyelftools" > mbed-os/tools/elftools/common/py3compat.py
+
+      - name: Compile firmware
+        run: mbed compile --profile release
 
       - name: Upload HEX
         uses: actions/upload-artifact@v4
