@@ -19,6 +19,10 @@
     ],
     "detect_code": ["TE41"],
     "release_versions": ["5"],
-    "linker_script": "teensy41.ld"
+    "linker_script": "teensy41.ld",
+    "device_name": "TEENSY41",
+    "overrides": {
+      "atmel-rf-driver.rf_device": false
+    }
   }
 }
