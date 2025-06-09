@@ -2,7 +2,9 @@ name: Build Teensy Remora Firmware
 
 on:
   push:
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
@@ -10,46 +12,54 @@ jobs:
 
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
 
     - name: Setup Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
 
     - name: Install GCC ARM toolchain
-      uses: carlosperate/arm-none-eabi-gcc-action@v1
-      with:
-        release: '10-2020-q4'
+      run: |
+        sudo apt update
+        sudo apt install -y gcc-arm-none-eabi
 
     - name: Install mbed-cli
-      run: pip install mbed-cli
+      run: |
+        pip install mbed-cli
 
     - name: Set Mbed Target
-      run: mbed target TEENSY41
+      run: |
+        mbed target TEENSY41
 
     - name: Set Mbed Toolchain
-      run: mbed toolchain GCC_ARM
+      run: |
+        mbed toolchain GCC_ARM
 
     - name: Clone working mbed-os
       run: |
-        rm -rf mbed-os
-        git clone https://github.com/ARMmbed/mbed-os.git --branch mbed-os-5.15 --depth 1
+        git clone https://github.com/ARMmbed/mbed-os.git
+        cd mbed-os && git checkout mbed-os-5.15
+
+    - name: Remove Mbed RTOS (to avoid mbed_rtx.h/cmsis.h errors)
+      run: |
+        rm -rf mbed-os/rtos
 
     - name: Install required Python packages
       run: |
         pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex
 
-    - name: Patch elftools reference
+    - name: Patch elftools reference (fix for mbed-cli bug)
       run: |
-        find mbed-os -type f -name "*.py" -exec sed -i 's/from elftools.common.py3compat import bytes2str/bytes2str = lambda b: b.decode("utf-8") if isinstance(b, bytes) else b/' {} +
+        sed -i 's/from elftools.common.py3compat import .*/bytes2str = lambda x: x.decode()/' \
+        mbed-os/tools/flash_algo/__init__.py
 
     - name: Compile firmware
       run: |
-        mbed compile --profile release
+        mbed compile --profile release -t GCC_ARM -m TEENSY41 --source . --build ./BUILD/TEENSY41/GCC_ARM-RELEASE
 
     - name: Upload HEX
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v3
       with:
-        name: Remora-Teensy41
-        path: BUILD/TEENSY41/GCC_ARM/Remora-Teensy41.hex
+        name: Teensy41_Remora_Firmware
+        path: BUILD/TEENSY41/GCC_ARM-RELEASE/Teensy-Remora-SPI-Build.hex
