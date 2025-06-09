@@ -1,10 +1,13 @@
+#include "mbed.h"
 #include "remora.h"
-#include "configuration.h"
+
+// Assume SPI remora transport is initialized in remora.cpp
 
 int main() {
-    RemoraApp app;
-    app.setup();
+    remora_init();
+
     while (true) {
-        app.loop();
+        remora_poll();
+        ThisThread::sleep_for(1ms);
     }
 }
