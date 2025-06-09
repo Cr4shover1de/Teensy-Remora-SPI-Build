@@ -34,7 +34,8 @@ jobs:
         git clone https://github.com/ARMmbed/mbed-os.git mbed-os
 
     - name: Install required Python packages
-      run: pip install jinja2 jsonschema pyYAML pyelftools cryptography click cbor psutil intelhex
+      run: |
+        pip install jinja2 jsonschema pyyaml pyelftools cryptography click cbor psutil intelhex elftools
 
     - name: Compile firmware
       run: mbed compile --profile release
