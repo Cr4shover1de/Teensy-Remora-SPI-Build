@@ -1,11 +1,11 @@
 #ifndef REMORA_H
 #define REMORA_H
+
 #include "mbed.h"
 
-class RemoraApp {
-public:
-    void setup() { /* SPI, encoder, DAC setup */ }
-    void loop() { /* main firmware loop */ }
-};
+// Definitions and prototypes for SPI transport and Remora
 
-#endif
+void remora_init();
+void remora_poll();
+
+#endif // REMORA_H
