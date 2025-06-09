@@ -1,6 +1,6 @@
 {
   "TEENSY41": {
-    "inherits": ["Freescale", "Target"],
+    "inherits": ["Target"],
     "core": "Cortex-M7FD",
     "supported_toolchains": ["GCC_ARM"],
     "extra_labels": ["MCU_LPC", "NXP", "MCU_LPC546XX"],
