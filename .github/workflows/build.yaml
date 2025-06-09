@@ -1,6 +1,7 @@
 name: Build Teensy Remora Firmware
 
 on:
+  push:
   workflow_dispatch:
 
 jobs:
@@ -12,14 +13,14 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.9
+        python-version: '3.9'
 
     - name: Install GCC ARM toolchain
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gcc-arm-none-eabi
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '10-2020-q4'
 
     - name: Install mbed-cli
       run: pip install mbed-cli
@@ -32,8 +33,8 @@ jobs:
 
     - name: Clone working mbed-os
       run: |
-        git clone --depth=1 https://github.com/ARMmbed/mbed-os.git mbed-os
-        cp -r mbed-os mbed
+        rm -rf mbed-os
+        git clone https://github.com/ARMmbed/mbed-os.git --branch mbed-os-5.15 --depth 1
 
     - name: Install required Python packages
       run: |
@@ -41,8 +42,7 @@ jobs:
 
     - name: Patch elftools reference
       run: |
-        mkdir -p mbed-os/tools/elftools/common
-        echo "def bytes2str(b): return b.decode('latin1')" > mbed-os/tools/elftools/common/py3compat.py
+        find mbed-os -type f -name "*.py" -exec sed -i 's/from elftools.common.py3compat import bytes2str/bytes2str = lambda b: b.decode("utf-8") if isinstance(b, bytes) else b/' {} +
 
     - name: Compile firmware
       run: |
@@ -51,5 +51,5 @@ jobs:
     - name: Upload HEX
       uses: actions/upload-artifact@v4
       with:
-        name: teensy41-hex
-        path: ./BUILD/TEENSY41/GCC_ARM_RELEASE/*.hex
+        name: Remora-Teensy41
+        path: BUILD/TEENSY41/GCC_ARM/Remora-Teensy41.hex
