@@ -1,18 +1,19 @@
 name: Build Teensy Remora Firmware
 
-on:
-  workflow_dispatch:
+on: [workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.9'
 
       - name: Install GCC ARM toolchain
         run: |
@@ -24,16 +25,19 @@ jobs:
           pip install mbed-cli
 
       - name: Set Mbed Target
-        run: |
-          mbed target TEENSY41
-          mbed toolchain GCC_ARM
+        run: mbed target TEENSY41
+
+      - name: Set Mbed Toolchain
+        run: mbed toolchain GCC_ARM
+
+      - name: Deploy mbed tools
+        run: mbed deploy
 
       - name: Compile firmware
-        run: |
-          mbed compile --profile release
+        run: mbed compile --profile release
 
       - name: Upload HEX
         uses: actions/upload-artifact@v4
         with:
-          name: Remora-Teensy41
+          name: Remora-Firmware
           path: BUILD/TEENSY41/GCC_ARM/*.hex
