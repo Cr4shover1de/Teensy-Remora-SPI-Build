@@ -1,0 +1,9 @@
+{
+  "TEENSY41": {
+    "inherits": ["MCU_NXP"],
+    "supported_toolchains": ["GCC_ARM"],
+    "core": "Cortex-M7F",
+    "extra_labels_add": ["NXP","IMXRT1062"],
+    "macros_add": ["IMXRT1062"]
+  }
+}
