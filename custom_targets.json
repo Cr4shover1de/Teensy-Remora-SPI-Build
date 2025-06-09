@@ -3,7 +3,7 @@
     "inherits": ["Target"],
     "core": "Cortex-M7FD",
     "supported_toolchains": ["GCC_ARM"],
-    "extra_labels": ["MCU_LPC", "NXP", "MCU_LPC546XX"],
+    "extra_labels": ["MCU_NXP", "MCU_LPC546XX"],
     "default_toolchain": "GCC_ARM",
     "macros": [
       "MBED_RTOS_SINGLE_THREAD",
@@ -18,8 +18,6 @@
       "PWM"
     ],
     "detect_code": ["TE41"],
-    "release_versions": ["5"],
-    "linker_script": "teensy41.ld",
-    "device_name": "TEENSY41"
+    "release_versions": ["5"]
   }
 }
