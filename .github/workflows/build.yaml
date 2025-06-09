@@ -30,8 +30,10 @@ jobs:
       - name: Set Mbed Toolchain
         run: mbed toolchain GCC_ARM
 
-      - name: Deploy mbed tools
-        run: mbed deploy
+      - name: Clone working mbed-os
+        run: |
+          rm -rf mbed-os
+          git clone https://github.com/ARMmbed/mbed-os.git
 
       - name: Compile firmware
         run: mbed compile --profile release
